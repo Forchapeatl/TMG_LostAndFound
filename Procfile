@@ -1,2 +1,2 @@
-web: python main.py
+worker: python main.py
 echo ${GOOGLE_CREDENTIALS} > /app/google-credentials.json
