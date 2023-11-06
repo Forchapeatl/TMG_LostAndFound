@@ -24,7 +24,7 @@ from semanticSearchByImage import semanticSearchByImage
 load_dotenv()
 
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'mongodb-403805-3cf96c2ad447.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'google-credentials.json'
 bq_client = Client()
 mongodb_connection = os.getenv("MONGODB_CONNECTION_S")
 cluster = MongoClient(mongodb_connection)
