@@ -1,5 +1,5 @@
 # TMG_LostAndFound
-TMG LostandFound is an online platform where people can turn in items they have lost and search items that have been found.
+TMG LostandFound is an online platform where people can turn in items they have found and search items that have been found.
 
 
 ## System Architecture
