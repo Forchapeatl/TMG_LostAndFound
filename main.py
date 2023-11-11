@@ -225,7 +225,7 @@ def submit_search_image_scenario(state):
 
     filename = state.searched_image_content[5:]
     shutil.move(state.searched_image_content, 'photos/'+ filename)
-    searched_image_content = 'photos/'+filename
+    state.searched_image_content = 'photos/'+filename
 
 
     notify(state, 'info', f'The image search begun {state.searched_image_content}')
