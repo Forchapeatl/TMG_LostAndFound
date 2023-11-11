@@ -1,14 +1,15 @@
-from taipy.gui import Markdown
+import taipy.gui.builder as tgb
+from taipy import Gui
 
 
+with tgb.Page() as semanticSearchByText:
+    tgb.input("{item_name}")
+    tgb.button("search" , on_action='search_text_scenario')
+    tgb.text("{results_item}")
 
-semanticSearchByText = Markdown("""
+    tgb.part(partial='{dynamic_content}')
 
-<|{item_name}|input|>
-<|search|button|on_action=search_text_scenario|>
-<|{results_item}|text|>
 
-""")
 
 def run(state):
     print("running sematic search")
