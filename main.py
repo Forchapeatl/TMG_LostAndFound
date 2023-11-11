@@ -24,7 +24,7 @@ from semanticSearchByImage import semanticSearchByImage
 load_dotenv()
 
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'google-credentials.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'mongodb-403805-3cf96c2ad447.json'
 bq_client = Client()
 mongodb_connection = os.getenv("MONGODB_CONNECTION_S")
 cluster = MongoClient(mongodb_connection)
@@ -35,13 +35,15 @@ collection = db["items"]
 PROJECT_ID= os.getenv("MONGODB_POJECT_ID")
 
 dict_for_items = []
+dict_for_searchByText = []
+dict_for_searchByImage = []
 
 content = ''
 message = None
 item_name = ''
 results_item = None
 path = None
-input_name = ''
+input_contact = ''
 input_item_type = ''
 input_date = ''
 input_where = ''
@@ -51,7 +53,7 @@ image_url=''
 input_circle_account = ''
 
 
-image_item_name = ''
+image_item_path = ''
 searched_image_content = ''
 image_results_item=''
 
@@ -76,7 +78,7 @@ def generate_text_embedding(sentence) -> list:
 
 def generate_image_embedding(image):
     model = MultiModalEmbeddingModel.from_pretrained("multimodalembedding@001")
-    image = Image.load_from_file("35.png")
+    image = Image.load_from_file(image)#1408
 
     embeddings = model.get_embeddings(
         image=image,
@@ -84,37 +86,30 @@ def generate_image_embedding(image):
     )
     image_embedding = embeddings.image_embedding
 
-    print(len(image_embedding))
-
-
-#for doc in collection.find({'how':{"$exists": True}}).limit(50):
-#    doc['plot_embedding_hf'] = generate_text_embedding(doc['how'])
-#    collection.replace_one({'_id': doc['_id']}, doc)
-
-
-#for doc in collection.find({'how':{"$exists": True}}).limit(50):
-#    doc['plot_image_embedding_hf'] = generate_image_embedding(doc['image'])
-#    collection.replace_one({'_id': doc['_id']}, doc)
+    return image_embedding
 
 
 def show_item_info(state,id):
     item_info = dict_for_items[int(id)]
-    notify(state, 'info', f"The text is: {item_info['how']}")
-
-
+    notify(state, 'info', f"{item_info['how']}")
 
 
 with tgb.Page() as itemsPage:
     with tgb.layout("2 2"):
         with tgb.part():
             for i in range(0 , len(dict_for_items) , 2):
-                tgb.image(dict_for_items[i]['image'])
-                tgb.button({str(dict_for_items[i]['where'])} , id=i, on_action = 'show_item_info')
+                tgb.image(dict_for_items[i]['image'] , hover_text=dict_for_items[i]['lost_or_found'])
+                tgb.button(dict_for_items[i]['contact'] , class_name='plain')
+                tgb.text(dict_for_items[i]['lost_or_found'] + " at" ,class_name='plain')                
+                tgb.button(dict_for_items[i]['where'] , id=i, on_action = 'show_item_info')
                 tgb.html("p", dict_for_items[i]['how'])
         with tgb.part():
             for i in range(1 , len(dict_for_items) , 2):
-                tgb.image(dict_for_items[i]['image'])
-                tgb.button({str(dict_for_items[i]['where'])} , id=i, on_action = 'show_item_info')
+                tgb.image(dict_for_items[i]['image'] , hover_text=dict_for_items[i]['lost_or_found'])
+                tgb.button(dict_for_items[i]['contact'] , class_name='plain')
+                tgb.text(dict_for_items[i]['lost_or_found']+ " at " , class_name='plain')                
+                
+                tgb.button(dict_for_items[i]['where'] , id=i, on_action = 'show_item_info')
                 tgb.html("p", dict_for_items[i]['how'])
 
 
@@ -132,45 +127,78 @@ def searchItemByText(keyword: str):
         "index": "PlotSemanticSearch",
           }}]);
 
-    #for document in results:
-    #    print(f'Found Item: {document["how"]}\n')
+    return results
+
+
+def searchItemByImage(imagePath: str):
+
+    query = imagePath
+
+    results = collection.aggregate([
+        {"$vectorSearch": {
+        "queryVector": generate_image_embedding(imagePath),
+        "path": "plot_image_embedding_hf",
+        "numCandidates": 100,
+        "limit": 4,
+        "index": "PlotSemanticImageSearch",
+          }}]);
 
     return results
 
 
 def upload_image(state):
 
+    filename = state.path[5:]
+    shutil.move(state.path, 'photos/'+ filename)
+    state.path =  'photos/'+filename
     notify(state, 'info', f'The text is: {state.path}')
 
 
 def submit_scenario(state):
     notify(state, 'info', f'The text is: {state.content}')
 
-    state.scenario.input_name.write(state.input_name)
+    state.scenario.input_contact.write(state.input_contact)
     state.scenario.input_item_type.write(state.input_item_type)
     state.scenario.input_date.write(state.input_date)
     state.scenario.input_where.write(state.input_where)
     state.scenario.input_lost_or_found.write(state.input_lost_or_found)
     state.scenario.input_how.write(state.input_how)
     state.scenario.path.write(state.path)
-    #state.scenario.input_circle_account.write(state.intput_where)
+    #state.scenario.input_circle_account.write(state.input_circle_account)
 
 
     state.scenario.submit(wait=True)
     state.message = scenario.message.read()
 
-def build_message(name:str ,item:str, when,  where :str, lost_or_found : str , how : str  , image : str):
-    collection.insert_one({"username":name, "item": item ,"when": str(when) , "where": where , "lost_or_found" : lost_or_found , "how":how , "image" : image})
+
+
+def build_message(phone:str ,item:str, when,  where :str, lost_or_found : str , how : str  , image : str):
+    
+
+    collection.insert_one({"contact":phone, "item": item ,"when": str(when) ,"where": where , 
+                "lost_or_found" : lost_or_found , "how":how , "image" : image ,
+                "plot_embedding_hf": generate_text_embedding(how) ,
+                "plot_image_embedding_hf": generate_image_embedding(image)})
     return f"{item}"
     
 
 
 def search_text_scenario(state):
-    notify(state, 'info', f'The text is: {state.content}')
+    notify(state, 'info', f'Searching By Text....')
 
     state.scenario_search.item_name.write(state.item_name)
     state.scenario_search.submit(wait=True)
     state.results_item = scenario_search.results_item.read()
+
+    partial = ''
+    for index in range(0, len(dict_for_searchByText) , 4):
+        partial+="<|"+dict_for_searchByText[index]+"|image|>"
+        partial+="<|"+dict_for_searchByText[index+1]+"|button|>"
+        partial+="<|"+dict_for_searchByText[index+2]+"|button|class_name=plain|>"
+        partial+="<|"+dict_for_searchByText[index+3]+"|button|class_name=secondary|>"
+
+
+    state.dynamic_content.update_content(state, partial)
 
 
 
@@ -180,8 +208,11 @@ def build_search_text_results(keyword: str):
     output = ""
 
     for document in results:
-        output += document["how"]
-        output +='\n'
+        dict_for_searchByText.append(document["image"])
+        dict_for_searchByText.append(document["contact"])
+        dict_for_searchByText.append(document["lost_or_found"])        
+        dict_for_searchByText.append(document["where"])
+
 
     return f"{output}"
 
@@ -192,16 +223,54 @@ def submit_search_image_scenario(state):
     #searched_image_content = ''
     #image_results_item=''
 
+    filename = state.searched_image_content[5:]
+    shutil.move(state.searched_image_content, 'photos/'+ filename)
+    searched_image_content = 'photos/'+filename
+
+
+    notify(state, 'info', f'The image search begun {state.searched_image_content}')
+
+    state.image_item_path = state.searched_image_content
     state.scenario_search_image.searched_image_content.write(state.searched_image_content)
+    state.scenario_search_image.image_item_path.write(state.image_item_path)
+    state.scenario_search_image.submit(wait=True)
 
 
-def build_search_image_results(imagePath: str):
-    return 
+
+    partialImage = ''
+    for index in range(0, len(dict_for_searchByImage) , 4):
+        partialImage+="<|"+dict_for_searchByImage[index]+"|image|>"
+        partialImage+="<|"+dict_for_searchByImage[index+1]+"|button|>"
+        partialImage+="<|"+dict_for_searchByImage[index+2]+"|button|class_name=plain|>"
+        partialImage+="<|"+dict_for_searchByImage[index+3]+"|button|class_name=secondary|>"
+
+
+    state.dynamic_content_image.update_content(state, partialImage)
+
+
+
+def build_search_image_results(imagePath: str , displayImagePath: str ):
+    print(imagePath)
+    print(displayImagePath)
+
+    results = searchItemByImage(imagePath)
+    output = ""
+
+    for document in results:
+        dict_for_searchByImage.append(document["image"])
+        dict_for_searchByImage.append(document["contact"])
+        dict_for_searchByImage.append(document["lost_or_found"])
+        dict_for_searchByImage.append(document["where"])
+
+
+    print(dict_for_searchByImage)
+
+    return f"{output}"    
 
 
 
 #configure request submit
-input_name_data_node_cfg = Config.configure_data_node(id="input_name")
+input_contact_data_node_cfg = Config.configure_data_node(id="input_contact")
 input_item_type_data_node_cfg = Config.configure_data_node(id="input_item_type")
 input_when_data_node_cfg = Config.configure_data_node(id="input_date")
 input_where_data_node_cfg = Config.configure_data_node(id="input_where")
@@ -212,7 +281,7 @@ image_path_data_node_cfg = Config.configure_data_node(id="path")
 message_data_node_cfg = Config.configure_data_node(id="message")
 build_msg_task_cfg = Config.configure_task(id="build_msg",
                                             function=build_message,
-                                            input=[input_name_data_node_cfg,
+                                            input=[input_contact_data_node_cfg,
                                             input_item_type_data_node_cfg,
                                             input_when_data_node_cfg, 
                                             input_where_data_node_cfg,
@@ -232,18 +301,19 @@ text_search_scenario_cfg = Config.configure_scenario("scenario_search", task_con
 
 
 #configure sematic image Search
-input_searched_image_content_data_node_cfg = Config.configure_data_node(id="searched_image_content")
+searched_image_content_data_node_cfg = Config.configure_data_node(id="searched_image_content")
+image_item_path_data_node_cfg = Config.configure_data_node(id="image_item_path")
 image_results_item_data_node_cfg = Config.configure_data_node(id ="image_results_item")
-build_image_search_task_cfg = Config.configure_task(id="build_image_search",function=build_search_image_results,input=[],output = image_results_item_data_node_cfg)
-image_search_scenario_cfg = Config.configure_scenario("scenario_search_image", task_configs=[])
+build_image_search_task_cfg = Config.configure_task(id="build_image_search",function=build_search_image_results,input=[image_item_path_data_node_cfg,searched_image_content_data_node_cfg ],output = image_results_item_data_node_cfg)
+image_search_scenario_cfg = Config.configure_scenario("scenario_search_image", task_configs=[build_image_search_task_cfg])
 
 
 
 
 pages = {"/": "<|navbar|>",
          'items': itemsPage,
+         'Register':form_md,
          'SearchByText':semanticSearchByText,
-         'Request':form_md,
          'SearchByImage': semanticSearchByImage 
 
 }
@@ -254,12 +324,18 @@ if __name__ == "__main__":
     scenario = tp.create_scenario(scenario_cfg)
     scenario_search = tp.create_scenario(text_search_scenario_cfg)
     scenario_search_image = tp.create_scenario(image_search_scenario_cfg)
-    Gui(pages = pages).run()
+    gui = Gui(pages = pages)
+    dynamic_content = gui.add_partial('')
+    dynamic_content_image = gui.add_partial('')
+    gui.run()
 
 
 """
+button adds "" <-xters
 
 image upload, ajax -->reflect db changes , file upload ,
+
+aDDING ELEMENTS TO DB DORES NOT REFRECT N PAGE UNLESS WE RELOAD THE SERVER, NOT PAGE , SERVER
 
 input does not reset on submit
 
@@ -284,10 +360,38 @@ Dialog content with tgb page
 
 you cannot search on enter key
 
+input nums
+
 markdown vs page builder
 
 date input breaks lines
 search on enter key
+
+cANT RELOAD SERVER FROM APP
+
+
+INPUT FORM DOES NOT RESET AFTER SUBMITTIING
+
+
+geting started  is mixed up
+
+add element not working on button click
+
+logging does not have line #
+
+
+Generate csv on fly
+
+enter on auto fill not working
+
+opening on new tap , reuse prev tab
+
+Taipy homepage wasn't made from Taipy
+
+
+theme change
+
+mongodb vector must me done manually or just do it on button click from atlas
 
 """
 
