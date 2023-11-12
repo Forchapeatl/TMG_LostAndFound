@@ -68,10 +68,13 @@ Verify Taipy Installation
 
 If you see the Taipy version information, it means that Taipy is installed successfully. Now you can start using Taipy to develop your online platform for managing lost and found items.
 
-## Clone this repository
+## Clone this repository and run the app
 
-
-
+```
+git clone https://github.com/Forchapeatl/TMG_LostAndFound.git
+cd TMG_LostAndFound
+taipy run main.py
+```
 
 To have keys on Google Cloud Platform (GCP) to do Vertex AI projects, you can either create a service account key or use a personal access token.
 
