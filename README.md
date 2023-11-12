@@ -37,10 +37,14 @@ The system is build on Taipy , MongoDB and Google Clould.
 To create a virtual environment in Linux and download and install Taipy, follow these steps:
 
 Install Python 3: Ensure you have Python 3 installed on your system. If not, install it using your system's package manager. For example, on Ubuntu or Debian, use the following command:
-```sudo apt install python3```
+```
+sudo apt install python3
+```
 
 Install virtualenv: Virtualenv is a tool for creating virtual environments in Python. Install it using the following command:
-```pip install virtualenv```
+```
+pip install virtualenv
+```
 
 Create a virtual environment: Create a directory for your project and create a virtual environment within that directory. For example, if your project is named "lost-and-found", use the following commands:
 
@@ -48,8 +52,8 @@ Create a virtual environment: Create a directory for your project and create a v
 mkdir lost-and-found
 cd lost-and-found
 virtualenv venv
-
 ```
+
 Activate the virtual environment: Activate the virtual environment using the following command:
 
 ```
@@ -58,13 +62,15 @@ source venv/bin/activate
 
 ## Install Taipy
 
-    Install Taipy: Install Taipy using the following command:
-    
-    `pip install taipy`
+Install Taipy: Install Taipy using the following command: 
+```
+pip install taipy
+```
 
 Verify Taipy Installation
-
-    `pip show taipy`
+```
+pip show taipy
+```
 
 If you see the Taipy version information, it means that Taipy is installed successfully. Now you can start using Taipy to develop your online platform for managing lost and found items.
 
