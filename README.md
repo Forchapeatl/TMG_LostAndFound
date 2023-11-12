@@ -19,7 +19,7 @@ The system is build on Taipy , MongoDB and Google Clould.
     - Utilized the semantic similarity between photos , query terms and item descriptions to retrieve relevant results.
 
 -  Google Cloud:
-  - Utilized a  custom model to generate semantic embeddings for lost item descriptions and images.
+    -Utilized a  custom model to generate semantic embeddings for lost item descriptions and images.
     
 ![image](https://github.com/Forchapeatl/TMG_LostAndFound/assets/24577149/e72b2d55-512a-4cdd-b02a-02c8ff75fd62)
 
