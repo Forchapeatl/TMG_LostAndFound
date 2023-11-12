@@ -30,15 +30,15 @@ The system is build on Taipy , MongoDB and Google Clould.
 
 ![image](https://github.com/Forchapeatl/TMG_LostAndFound/assets/24577149/48b8ab7c-bbf7-4e08-b56b-bd6dec3c82bb)
 
-# How to install:
-# Creating a virtual environment
+# TMG LostandFound installation guide:
+## Creating a virtual environment
 To create a virtual environment in Linux and download and install Taipy, follow these steps:
 
 Install Python 3: Ensure you have Python 3 installed on your system. If not, install it using your system's package manager. For example, on Ubuntu or Debian, use the following command:
-`sudo apt install python3`
+```sudo apt install python3```
 
 Install virtualenv: Virtualenv is a tool for creating virtual environments in Python. Install it using the following command:
-`pip install virtualenv`
+```pip install virtualenv```
 
 Create a virtual environment: Create a directory for your project and create a virtual environment within that directory. For example, if your project is named "lost-and-found", use the following commands:
 
