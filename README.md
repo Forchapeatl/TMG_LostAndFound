@@ -33,33 +33,6 @@ The system is build on Taipy , MongoDB and Google Clould.
 ![image](https://github.com/Forchapeatl/TMG_LostAndFound/assets/24577149/48b8ab7c-bbf7-4e08-b56b-bd6dec3c82bb)
 
 # TMG LostandFound installation guide:
-## Creating a virtual environment
-To create a virtual environment in Linux and download and install Taipy, follow these steps:
-
-Install Python 3: Ensure you have Python 3 installed on your system. If not, install it using your system's package manager. For example, on Ubuntu or Debian, use the following command:
-```
-sudo apt install python3
-```
-
-Install virtualenv: Virtualenv is a tool for creating virtual environments in Python. Install it using the following command:
-```
-pip install virtualenv
-```
-
-Create a virtual environment: Create a directory for your project and create a virtual environment within that directory. For example, if your project is named "lost-and-found", use the following commands:
-
-```
-mkdir lost-and-found
-cd lost-and-found
-virtualenv venv
-```
-
-Activate the virtual environment: Activate the virtual environment using the following command:
-
-```
-source venv/bin/activate
-```
-
 ## Install Taipy
 
 Install Taipy: Install Taipy using the following command: 
@@ -79,21 +52,12 @@ If you see the Taipy version information, it means that Taipy is installed succe
 ```
 git clone https://github.com/Forchapeatl/TMG_LostAndFound.git
 cd TMG_LostAndFound
+pip install -r requirements.txt
 taipy run main.py
 ```
+- Get a mongoDB atlas connection string. Tutorial can be found [here](https://www.mongodb.com/basics/mongodb-atlas-tutorial)  
 
-To have keys on Google Cloud Platform (GCP) to do Vertex AI projects, you can either create a service account key or use a personal access token.
+- Create a Google Cloud Platform service account key and subscribe to the Vertex AI API. The tutorial can be found [here](https://cloud.google.com/iam/docs/keys-create-delete)
 
-- Creating a service account key
-
-1. Go to the Google Cloud Console and navigate to the IAM & Admin > Service accounts page.
-2. Click the "Create Service Account" button.
-3. Enter a unique name for the service account and select a project for it.
-4. Grant the service account the necessary roles to perform Vertex AI tasks. For example, the "Roles/aiplatform.developer" role allows the service account to create and manage Vertex AI resources.
-5. Click the "Create" button to create the service account.
-6. Click the "Keys" tab for the newly created service account.
-7. Click the "Add key" button and select "Create new key".
-8. Choose the key type (JSON or P12) and click the "Create" button.
-9. Download the key file and store it securely.
 
 
