@@ -55,9 +55,15 @@ cd TMG_LostAndFound
 pip install -r requirements.txt
 taipy run main.py
 ```
+##Prerequisites
 - Get a mongoDB atlas connection string. Tutorial can be found [here](https://www.mongodb.com/basics/mongodb-atlas-tutorial)  
 
 - Create a Google Cloud Platform service account key and subscribe to the Vertex AI API. The tutorial can be found [here](https://cloud.google.com/iam/docs/keys-create-delete)
+  
+Add your service key file to the root folder and replace the `'mongodb-403805-3cf96c2ad447.json` file name at line 27
+
+[github.com/Forchapeatl/TMG_LostAndFound/blob/main/main.py?plain=1#L27
+](https://github.com/Forchapeatl/TMG_LostAndFound/blob/11b3e53479a0c10c061415df16663300dab91527/main.py#L27)https://github.com/Forchapeatl/TMG_LostAndFound/blob/11b3e53479a0c10c061415df16663300dab91527/main.py#L27  
 
 
 
