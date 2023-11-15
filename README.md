@@ -13,10 +13,10 @@ The system is build on Taipy , MongoDB and Google Clould.
   - Used Taipy's declarative syntax to create a form for users to submit lost item reports.
   - Captured details like item description, location, date of loss, and finder's contact information.
   - Implemented image upload functionality to allow users to attach photos of the lost item.
-  - Created a search interface for users to find lost items based on various criteria, such as story similary and Image similarity.
+  - Created a search interface for users to find lost items based on various criteria, such as story similary and Image recognition.
   
 - MongoDB Atlas:
-    - Used Atlas Vector Search to enable semantic search capabilities for item descriptions and identification.
+    - Used Atlas Vector Search to enable semantic search capabilities for item descriptions and image recognition.
     - Allow users to search for lost items using natural language queries and pictures instead of relying solely on keywords.
     - Utilized the semantic similarity between photos , query terms and item descriptions to retrieve relevant results.
 
